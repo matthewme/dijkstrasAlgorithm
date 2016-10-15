@@ -1,139 +1,139 @@
 # header File
-  #pragma once
-  #include "graph.h"
-  #include <iostream>
-  #include <vector>
-  using namespace std;
-  //This Priority Queue Modified to check weights of vertices
-  template<class THING>
-  class minHeap
-  {
-  private:
-    vector<THING> items;
-
-    void bubbleUp(int i)
+    #pragma once
+    #include "graph.h"
+    #include <iostream>
+    #include <vector>
+    using namespace std;
+    //This Priority Queue Modified to check weights of vertices
+    template<class THING>
+    class minHeap
     {
-      if (i == 0)
+    private:
+      vector<THING> items;
+
+      void bubbleUp(int i)
       {
-        //no parent, so no violation
-      }
-      else
-      {
-        while (items[i]->weight < items[parent(i)]->weight)
+        if (i == 0)
         {
-          //swap items
-          swap(items[i], items[parent(i)]);
+          //no parent, so no violation
+        }
+        else
+        {
+          while (items[i]->weight < items[parent(i)]->weight)
+          {
+            //swap items
+            swap(items[i], items[parent(i)]);
 
-          //bubble up on parent
-          bubbleUp(parent(i));
-        }		
+            //bubble up on parent
+            bubbleUp(parent(i));
+          }		
+        }
       }
-    }
 
-    //Index of Parent
-    int parent(int i)
-    {
-      if (i % 2 == 0)//Even number
+      //Index of Parent
+      int parent(int i)
       {
-        int parentIndex = (i / 2) - 1;
-        return parentIndex;
+        if (i % 2 == 0)//Even number
+        {
+          int parentIndex = (i / 2) - 1;
+          return parentIndex;
+        }
+        else//Odd Number
+        {
+          int parentIndex = (i - 1) / 2;
+          return parentIndex;
+        }
       }
-      else//Odd Number
+
+      void bubbleDown(int i)
       {
-        int parentIndex = (i - 1) / 2;
-        return parentIndex;
+        int length = items.size();
+        int lChild = leftChild(i);
+        int rChild = rightChild(i);
+
+        if (lChild >= length)//Check if only 1 element
+          return;
+
+        int minIndex = i;
+
+        if (items[i]->weight > items[lChild]->weight)//Compare Left Child
+        {
+          minIndex = lChild;
+        }
+
+        if ((rChild < length) && (items[minIndex]->weight > items[rChild]->weight))//Compare Right Child
+        {
+          minIndex = rChild;
+        }
+
+        if (minIndex != i)
+        {
+          //Swap
+          swap(items[i], items[minIndex]);
+          bubbleDown(minIndex);
+        }
       }
-    }
 
-    void bubbleDown(int i)
-    {
-      int length = items.size();
-      int lChild = leftChild(i);
-      int rChild = rightChild(i);
-
-      if (lChild >= length)//Check if only 1 element
-        return;
-
-      int minIndex = i;
-
-      if (items[i]->weight > items[lChild]->weight)//Compare Left Child
+      //Index of Left Child
+      int leftChild(int i)
       {
-        minIndex = lChild;
+        int lChild = (2 * i) + 1;
+        return lChild;
       }
 
-      if ((rChild < length) && (items[minIndex]->weight > items[rChild]->weight))//Compare Right Child
+      //Index of Right Child
+      int rightChild(int i)
       {
-        minIndex = rChild;
+        int rChild = (2 * (i + 1));
+        return rChild;
       }
 
-      if (minIndex != i)
+    public:
+      minHeap()
       {
-        //Swap
-        swap(items[i], items[minIndex]);
-        bubbleDown(minIndex);
       }
-    }
 
-    //Index of Left Child
-    int leftChild(int i)
-    {
-      int lChild = (2 * i) + 1;
-      return lChild;
-    }
+      //add new item to heap
+      void insert(THING x)
+      {
+        //put item at back of array/vector
+        items.push_back(x);
 
-    //Index of Right Child
-    int rightChild(int i)
-    {
-      int rChild = (2 * (i + 1));
-      return rChild;
-    }
+        //bubble item up until no more violation exists
+        bubbleUp(items.size() - 1);
+      }
 
-  public:
-    minHeap()
-    {
-    }
+      bool empty()
+      {
+        if (items.size() == 0)
+          return true;
+        else
+          return false;
+      }
 
-    //add new item to heap
-    void insert(THING x)
-    {
-      //put item at back of array/vector
-      items.push_back(x);
+      void display()
+      {
+        for (int i = 0; i < items.size(); ++i)
+          cout << items[i] << endl;
 
-      //bubble item up until no more violation exists
-      bubbleUp(items.size() - 1);
-    }
+        cout << "Size of Vector is: " << items.size() << endl << endl;
+      }
 
-    bool empty()
-    {
-      if (items.size() == 0)
-        return true;
-      else
-        return false;
-    }
+      THING getMin()
+      {
+        return items[0];
+      }
 
-    void display()
-    {
-      for (int i = 0; i < items.size(); ++i)
-        cout << items[i] << endl;
+      //remove and return smallest item
+      THING extractMin()
+      {
+        THING temp = items[0];
 
-      cout << "Size of Vector is: " << items.size() << endl << endl;
-    }
+        items[0] = items[items.size() - 1];
+        items.pop_back();
+        bubbleDown(0);
 
-    THING getMin()
-    {
-      return items[0];
-    }
+        return temp;
+      }
 
-    //remove and return smallest item
-    THING extractMin()
-    {
-      THING temp = items[0];
-
-      items[0] = items[items.size() - 1];
-      items.pop_back();
-      bubbleDown(0);
-
-      return temp;
-    }
-
-  };
+    };
